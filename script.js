@@ -29,8 +29,8 @@ const PUBS = [
         rule: "Find a prop",
         drink: "Double Vodka Lemonade",
         forfeit: "Group chant",
-        lat: 52.6369,
-        lng: -1.1398,
+        lat: 52.6365,
+        lng: -1.1392,
         color: "#eab308"
     },
     {
