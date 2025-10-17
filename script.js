@@ -161,13 +161,13 @@ function initMap() {
 function renderPubCards() {
     const container = document.getElementById('pubCards');
     container.innerHTML = PUBS.map((pub, index) => `
-        <div class="glass-card-light rounded-xl p-5 hover:scale-105 cursor-pointer fade-in" style="animation-delay: ${index * 0.1}s;">
+        <div class="glass-card-light rounded-xl p-5 cursor-pointer card-hover scale-in stagger-${(index % 6) + 1}" style="animation-delay: ${index * 0.1}s;">
             <div class="flex items-start gap-4">
-                <div class="text-4xl flex-shrink-0">${pub.emoji}</div>
+                <div class="text-4xl flex-shrink-0 ${index % 2 === 0 ? 'float' : 'bounce'}" style="animation-delay: ${index * 0.2}s;">${pub.emoji}</div>
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xl font-bold">${pub.name}</span>
-                        ${pub.optional ? '<span class="text-xs px-2 py-1 bg-green-500/30 rounded-full">Optional</span>' : ''}
+                        <span class="text-xl font-bold gradient-text">${pub.name}</span>
+                        ${pub.optional ? '<span class="text-xs px-2 py-1 bg-green-500/30 rounded-full pulse">Optional</span>' : ''}
                     </div>
                     <div class="space-y-1 text-sm">
                         <p><strong class="text-violet-400">Rule:</strong> <span class="text-gray-300">${pub.rule}</span></p>
@@ -226,9 +226,9 @@ function renderLeaderboard() {
     
     if (state.players.length === 0) {
         container.innerHTML = `
-            <div class="text-center text-gray-400 py-8">
-                <div class="text-4xl mb-2">👥</div>
-                <p>Add players to see the leaderboard!</p>
+            <div class="text-center text-gray-400 py-8 fade-in">
+                <div class="text-4xl mb-2 float">👥</div>
+                <p class="text-lg">Add players to see the leaderboard!</p>
             </div>
         `;
         return;
@@ -245,20 +245,20 @@ function renderLeaderboard() {
         const isWomp = index === leaderboard.length - 1 && leaderboard.length > 1;
         
         return `
-            <div class="glass-card-light rounded-lg p-4 flex items-center justify-between hover:scale-105 fade-in">
+            <div class="glass-card-light rounded-lg p-4 flex items-center justify-between card-hover scale-in stagger-${(index % 6) + 1}" style="animation-delay: ${index * 0.1}s;">
                 <div class="flex items-center gap-3">
-                    <div class="text-2xl font-bold text-gray-500">#${index + 1}</div>
+                    <div class="text-2xl font-bold ${isChampion ? 'text-yellow-400' : isWomp ? 'text-red-400' : 'text-gray-500'} ${isChampion || isWomp ? 'pulse' : ''}">#${index + 1}</div>
                     <div>
                         <div class="font-bold text-lg flex items-center gap-2">
-                            ${player.name}
+                            <span class="${isChampion ? 'gradient-text' : ''}">${player.name}</span>
                             ${isChampion ? '<span class="champion">👑</span>' : ''}
                             ${isWomp ? '<span class="womp">💀</span>' : ''}
                         </div>
-                        ${isChampion ? '<div class="text-xs text-yellow-400">Pub Crawl Champion</div>' : ''}
-                        ${isWomp ? '<div class="text-xs text-red-400">Womp Womps</div>' : ''}
+                        ${isChampion ? '<div class="text-xs text-yellow-400 pulse">Pub Crawl Champion</div>' : ''}
+                        ${isWomp ? '<div class="text-xs text-red-400 pulse">Womp Womps</div>' : ''}
                     </div>
                 </div>
-                <div class="text-2xl font-bold text-violet-400">${player.score}</div>
+                <div class="text-2xl font-bold text-violet-400 ${isChampion || isWomp ? 'pulse glow' : ''}">${player.score}</div>
             </div>
         `;
     }).join('');
@@ -270,17 +270,18 @@ function renderPlayersList() {
     
     if (state.players.length === 0) {
         container.innerHTML = `
-            <div class="text-center text-gray-400 py-4">
+            <div class="text-center text-gray-400 py-4 fade-in">
+                <div class="text-3xl mb-2 bounce">🎭</div>
                 <p>No players yet. Add some!</p>
             </div>
         `;
         return;
     }
     
-    container.innerHTML = state.players.map(player => `
-        <div class="glass-card-light rounded-lg p-3 flex items-center justify-between hover:scale-105">
-            <span class="font-semibold">${player}</span>
-            <button onclick="removePlayer('${player}')" class="px-3 py-1 bg-red-500/20 hover:bg-red-500/40 rounded text-red-400 text-sm">
+    container.innerHTML = state.players.map((player, index) => `
+        <div class="glass-card-light rounded-lg p-3 flex items-center justify-between card-hover fade-in" style="animation-delay: ${index * 0.1}s;">
+            <span class="font-semibold gradient-text">${player}</span>
+            <button onclick="removePlayer('${player}')" class="px-3 py-1 bg-red-500/20 hover:bg-red-500/40 rounded text-red-400 text-sm transition-all duration-300">
                 ✕ Remove
             </button>
         </div>
@@ -293,9 +294,9 @@ function renderScoreboard() {
     
     if (state.players.length === 0) {
         container.innerHTML = `
-            <div class="text-center text-gray-400 py-8">
-                <div class="text-4xl mb-2">📊</div>
-                <p>Add players to start tracking scores!</p>
+            <div class="text-center text-gray-400 py-8 fade-in">
+                <div class="text-4xl mb-2 pulse">📊</div>
+                <p class="text-lg">Add players to start tracking scores!</p>
             </div>
         `;
         return;
@@ -306,18 +307,21 @@ function renderScoreboard() {
         const totalScore = calculatePlayerScore(player);
         
         return `
-            <div class="glass-card-light rounded-xl p-4 mb-4">
+            <div class="glass-card-light rounded-xl p-4 mb-4 card-hover fade-in" style="animation-delay: ${state.players.indexOf(player) * 0.1}s;">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-cyan-400">${player}</h3>
-                    <div class="text-2xl font-bold text-violet-400">${totalScore} pts</div>
+                    <h3 class="text-xl font-bold gradient-text">${player}</h3>
+                    <div class="text-2xl font-bold text-violet-400 glow">${totalScore} pts</div>
                 </div>
                 
                 <div class="space-y-3">
                     ${PUBS.filter(p => !p.optional).map((pub, pubIndex) => {
                         const round = rounds[pubIndex] || null;
                         return `
-                            <div class="bg-white/5 rounded-lg p-3">
-                                <div class="font-semibold mb-2 text-sm">${pub.emoji} ${pub.name}</div>
+                            <div class="bg-white/5 rounded-lg p-3 card-hover transition-all duration-300">
+                                <div class="font-semibold mb-2 text-sm flex items-center gap-2">
+                                    <span class="${pubIndex % 2 === 0 ? 'float' : 'bounce'}">${pub.emoji}</span>
+                                    <span>${pub.name}</span>
+                                </div>
                                 ${round ? `
                                     <div class="grid grid-cols-2 gap-2 text-xs">
                                         <div><strong>Position:</strong> ${round.position}</div>
@@ -329,11 +333,11 @@ function renderScoreboard() {
                                             ${round.forfeitLegend ? '<span class="text-yellow-400">⭐ Legend</span> ' : ''}
                                         </div>
                                     </div>
-                                    <button onclick="editRound('${player}', ${pubIndex})" class="mt-2 px-3 py-1 bg-violet-500/30 hover:bg-violet-500/50 rounded text-xs w-full">
+                                    <button onclick="editRound('${player}', ${pubIndex})" class="mt-2 px-3 py-1 bg-violet-500/30 hover:bg-violet-500/50 rounded text-xs w-full transition-all duration-300 hover:scale-105">
                                         ✏️ Edit
                                     </button>
                                 ` : `
-                                    <button onclick="addRound('${player}', ${pubIndex})" class="px-3 py-1 bg-green-500/30 hover:bg-green-500/50 rounded text-xs w-full">
+                                    <button onclick="addRound('${player}', ${pubIndex})" class="px-3 py-1 bg-green-500/30 hover:bg-green-500/50 rounded text-xs w-full transition-all duration-300 hover:scale-105">
                                         ➕ Add Score
                                     </button>
                                 `}
@@ -396,8 +400,8 @@ function editRound(playerName, pubIndex) {
 
 function createRoundModal(playerName, pub, existingRound, pubIndex) {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4';
-    modal.style.backdropFilter = 'blur(5px)';
+    modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 fade-in';
+    modal.style.backdropFilter = 'blur(10px)';
     
     const round = existingRound || {
         position: '1st',
@@ -409,9 +413,11 @@ function createRoundModal(playerName, pub, existingRound, pubIndex) {
     };
     
     modal.innerHTML = `
-        <div class="glass-card rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <h3 class="text-2xl font-bold mb-4 text-violet-400">${pub.emoji} ${pub.name}</h3>
-            <p class="text-sm text-gray-300 mb-4">Scoring for <strong>${playerName}</strong></p>
+        <div class="glass-card rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto scale-in glow">
+            <h3 class="text-2xl font-bold mb-4 gradient-text flex items-center gap-2">
+                <span class="float">${pub.emoji}</span> ${pub.name}
+            </h3>
+            <p class="text-sm text-gray-300 mb-4">Scoring for <strong class="gradient-text">${playerName}</strong></p>
             
             <div class="space-y-4">
                 <div>
@@ -457,10 +463,10 @@ function createRoundModal(playerName, pub, existingRound, pubIndex) {
             </div>
             
             <div class="flex gap-2 mt-6">
-                <button id="modalSave" class="flex-1 px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-lg font-semibold">
+                <button id="modalSave" class="flex-1 px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                     💾 Save
                 </button>
-                <button id="modalCancel" class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold">
+                <button id="modalCancel" class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
                     ✕ Cancel
                 </button>
             </div>
